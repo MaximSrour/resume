@@ -18,4 +18,10 @@ sudo apt-get install -y texlive-fonts-recommended
 sudo apt-get install -y texlive-fonts-extra
 sudo apt-get install -y texlive-latex-extra
 
+sudo apt-get install -y texlive-xetex
+
 pip install mysqlclient python-dotenv
+
+#sudo cp ./Geist/Geist-Regular.otf /usr/share/fonts/truetype/
+#sudo cp ./Geist/Geist-Bold.otf /usr/share/fonts/truetype/
+#sudo fc-cache -f -v
