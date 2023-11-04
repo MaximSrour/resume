@@ -1,0 +1,152 @@
+\newcommand{\showteaching}{0}
+\newcommand{\showreferences}{0}
+\newcommand{\hideexcesseducation}{1}
+
+\documentclass[10pt]{article}
+
+\usepackage{resumeassets}
+\usepackage{resumeitems}
+
+\usepackage{ifthen}
+%\usepackage{showframe}
+\usepackage{geometry}
+\usepackage{setspace}
+\usepackage{xcolor}
+\usepackage{sectsty}
+\usepackage{tgbonum}
+\usepackage{courier}
+\usepackage{helvet}
+\usepackage[none]{hyphenat}
+\usepackage[xindy]{glossaries}
+\usepackage{tikz}
+\usepackage{hyperref}
+\usepackage{fontawesome5}
+%\usepackage{glossdictionary}
+
+%format--------------------------------------
+\geometry{a4paper, portrait, margin=0.5in}
+
+\definecolor{bluedark1}{RGB}{31, 56, 100}
+\definecolor{bluedark2}{RGB}{20, 25, 50}
+\definecolor{primarycolor}{HTML}{3b0764}
+\definecolor{secondarycolor}{HTML}{ffffff}
+
+\renewcommand{\familydefault}{\sfdefault}
+
+\sectionfont{\color{bluedark1} \fontsize{14}{0}\selectfont}
+\subsectionfont{\color{bluedark1} \fontsize{12}{0}\selectfont}
+\subsubsectionfont{\color{bluedark2} \fontsize{11}{0}\selectfont}
+
+\setlength{\parindent}{0pt}
+
+\fontfamily{pcr}\selectfont
+
+\let\tempone\itemize
+\let\temptwo\enditemize
+\renewenvironment{itemize}{\tempone\addtolength{\itemsep}{-0.5\baselineskip}}{\temptwo}
+
+\makeglossaries
+\newacronym[longplural={After Action Reviews}]{AAR}{AAR}{After Action Review}
+\newacronym{ABM}{ABM}{Air Battle Management}
+\newacronym{ACM}{ACM}{Air Combat Maneuvering}
+\newacronym{AOS}{AOS}{Aerospace Operations Simulation}
+\newacronym{AR}{AR}{Augmented Reality}
+\newacronym{AV}{AV}{Audio-Visual}
+\newacronym{CSV}{CSV}{Comma-Separated Values}
+\newacronym{DIS}{DIS}{Distributed Interactive Simulation}
+\newacronym{DOD}{DOD}{The Department of Defence}
+\newacronym{DR}{DR}{Dead Reckoning}
+\newacronym{DSTG}{DSTG}{Defence Science and Technology Group}
+\newacronym{GCS}{GCS}{Geograpic Coordinate System}
+\newacronym{GIS}{GIS}{Geograpic Information System}
+\newacronym{HF}{HF}{Human-Factors}
+\newacronym{LVC}{LVC}{Live-Virtual-Constructive}
+\newacronym{PL2}{PL2}{Pacific Link 2}
+\newacronym[longplural={Protocol Data Units}]{PDU}{PDU}{Protocol Data Unit}
+\newacronym[longplural={Subject Matter Experts}]{SME}{SME}{Subject Matter Expert}
+\newacronym{STAR}{STaR Shots}{Science, Technology and Research Shots}
+\newacronym{Unity}{Unity3D}{Unity Engine 3D}
+\newacronym{UE4}{UE4}{Unreal Engine 4}
+\newacronym{UE45}{UE4/5}{Unreal Engine 4/5}
+\newacronym{UE5}{UE5}{Unreal Engine 5}
+\newacronym{VR}{VR}{Virutal Reality}
+\newacronym{WGS}{WGS84}{World Geodetic System 1984}
+
+\newcommand{\hr}{%
+	\noindent\rule{\textwidth}{1pt}
+	\vspace{-15pt}
+}
+
+\title{Maxim Srour - Resume}
+\date{}
+
+% Title and subtitle formatting
+\newcommand{\Title}{Maxim Srour}
+\newcommand{\Subtitle}{Software Engineer}
+
+\begin{document}
+	%\maketitle
+
+	\begin{tikzpicture}[remember picture,overlay]
+		\node[rectangle, fill=primarycolor, anchor=north, minimum width=\paperwidth, minimum height=3.5cm] (box) at (current page.north) {};
+
+		\node[anchor=west, text=white, xshift=0.5in, yshift=-1.8cm, text width=0.5\paperwidth] at (box.north west) {
+			\Huge\bfseries\Title\newline\newline
+			\Large\Subtitle
+		};
+		\node[anchor=east, text=white, xshift=-0.4in, yshift=-1.8cm] at (box.north east) {
+			\begin{tabular}{r}
+				\href{http://msrour.me}{Portfolio \large\faGlobeAmericas} \\[1em]
+				\href{https://www.linkedin.com/in/maxim-srour-534a11156}{LinkedIn \large\faLinkedin} \\[1em]
+				\href{https://github.com/MaximSrour}{GitHub \large\faGithub} 
+			\end{tabular}
+		};
+	\end{tikzpicture}
+	
+	\vspace{2cm}
+	
+	\section*{Objective}
+	\paragraph{}Experienced software engineer with a robust background in project management and team leadership, eager to advance into a Senior Software Engineer or Managerial role. Dedicated to utilizing strong technical acumen and strategic planning skills to drive project success and team growth in a dynamic and innovative technology firm.
+
+	\hr{}
+
+	\section*{Skills and Abilities}
+
+	\subsection*{Technical Skills}
+	\begin{itemize}
+		\item Advanced programming in C++, TypeScript, Python
+		\item Proficiency programming in R, VBA, and LaTeX
+		\item Web development expertise with HTML and React
+		\item Competency creating data visualizations, using PowerBI, Tableau, Google Analytics, and bespoke solutions
+		\item Full SDLC management with a focus on Agile and Waterfall methodologies
+		\item AWS Cloud Practitioner Certified, with experience in cloud infrastructure management
+		\item Game development with \gls{UE45}, \gls{Unity}
+		\item Advanced spreadsheet engineering in Excel and Google Sheets
+	\end{itemize}
+
+	\subsection*{Managerial Skills}
+	\begin{itemize}
+		\item Agile project management, with a strong emphasis on Scrum methodology
+		\item Experience in leading cross-functional teams in high-pressure environments
+		\item Strategic planning and execution of project roadmaps from inception to delivery
+		\item Proficiency in UI/UX design principles, driving user-centric product development
+	\end{itemize}
+
+	\subsection*{Soft Skills}
+	\begin{itemize}
+		\item Strong leadership and team-building capabilities
+		\item Effective communication, negotiation, and stakeholder management skills
+		\item Analytical and problem-solving mindset
+		\item Capacity to manage multiple projects and deadlines concurrently
+	\end{itemize}
+
+	\hr{}
+
+	\section*{Work Experience}
+	\workexperience{}
+
+	\hr{}
+	
+	\section*{Education}
+	\education{}
+\end{document}

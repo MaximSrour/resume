@@ -1,0 +1,72 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{resumeassets}[Maxim]
+
+\usepackage[super]{nth}
+\usepackage{datetime}
+\usepackage{datetime2}
+
+\newcommand\workexperienceitem[5]{%
+	\begin{minipage}{\textwidth}%
+		\subsection*{#1}
+		\vspace{-5pt}
+		\subsubsection*{#2}
+		\vspace{-5pt}
+		\subsubsection*{\textit{#3 - #4}}
+		#5
+		\vspace{15pt}
+	\end{minipage}
+}
+\newcommand\educationitem[5]{%
+	\begin{minipage}{\textwidth}%
+		\subsection*{#1 | #2}
+		\vspace{-5pt}
+		\subsubsection*{\textit{#3 - #4}}
+		#5
+		\vspace{15pt}
+	\end{minipage}
+}
+\newcommand\additionalactivitiesitem[5]{%
+	\begin{minipage}{\textwidth}%
+		\subsection*{#1}
+		\vspace{-5pt}
+		\subsubsection*{#2}
+		#5
+		\vspace{15pt}
+	\end{minipage}
+}
+\newcommand\certificationitem[4]{%
+	\begin{minipage}{\textwidth}%
+		\subsection*{#1}
+		\vspace{-5pt}
+		\subsubsection*{#2}
+		\vspace{-5pt}
+		\subsubsection*{\textit{#3 - #4}}
+		\vspace{15pt}
+	\end{minipage}
+}
+\newcommand\teachingitem[5]{%
+	\vspace{10pt}
+	\subsection*{#1 - #2}
+	\textit{#3, #4} - #5
+	\vspace{-7pt}
+}
+\newcommand\referenceitem[5]{%
+	\vspace{10pt}
+	\subsection*{#1 | #2}
+	\subsubsection*{\textit{#3}}
+	\textbf{Email: } #4\vspace{5pt}\\
+	\textbf{Tel: } #5
+}
+
+\newcommand\customdate[3]{%
+	\nth{#1} \monthname[#2], #3
+}
+
+\newcommand{\newsaveditem}[2]{%
+	\expandafter\newcommand\csname saveditem@#1\endcsname{%
+		#2
+	}
+}
+\newcommand{\printsaveditem}[1]{%
+	\csname saveditem@#1\endcsname
+}
