@@ -44,13 +44,14 @@ def escape_characters(string_to_clean: str) -> str:
     @returns {str} - The cleaned string
     """
 
-    string_to_clean = escape_character(string_to_clean, "&")
-    string_to_clean = escape_character(string_to_clean, "#")
-    string_to_clean = escape_character(string_to_clean, "%")
+    characters = ["&", "#", "%"]
+
+    for character in characters:
+        string_to_clean = escape_character(string_to_clean, character)
     
     return string_to_clean
 
-def parargaph(content: str, header: str = "") -> str:
+def paragraph(content: str, header: str = "") -> str:
     """
     Create a latex paragraph
 
@@ -82,6 +83,6 @@ def work_experience(data: Position):
 def education(data: Education):
     text = ""
 
-    text += f"\n\t\educationitem{{{data.title}}}{{{data.organisation}}}{{{data.start}}}{{{data.end}}}{{\n\t\t{parargaph(data.description)}\n\t}}"
+    text += f"\n\t\educationitem{{{data.title}}}{{{data.organisation}}}{{{data.start}}}{{{data.end}}}{{\n\t\t{paragraph(data.description)}\n\t}}"
 
     return new_saved_item(data.id, text)
