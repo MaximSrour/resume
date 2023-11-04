@@ -197,7 +197,7 @@ def clean_files() -> None:
     Clean the files in the tex directory
     """
 
-    extensions = ["aux", "log", "out", "glo", "xdy"]
+    extensions = ["aux", "log", "out", "glo", "xdy", "synctex.gz"]
 
     for extension in extensions:
         os.system(f"rm ./tex/{FILE_NAME}.{extension}")
@@ -216,9 +216,9 @@ def main() -> None:
             file.write(latex_out)
 
     if "quiet" not in PROGRAM_ARGS:
-        os.system(f"pdflatex -output-directory ./tex ./tex/{FILE_NAME}.tex")
+        os.system(f"xelatex -output-directory ./tex ./tex/{FILE_NAME}.tex")
     else:
-        os.system(f"pdflatex -output-directory ./tex ./tex/{FILE_NAME}.tex > /dev/null")
+        os.system(f"xelatex -output-directory ./tex ./tex/{FILE_NAME}.tex > /dev/null")
 
     #clean_files()
 

@@ -166,3 +166,4 @@ tex/*.log
 tex/*.out
 tex/*.xdy
 tex/*.pdf
+tex/*.synctex.gz

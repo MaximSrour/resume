@@ -1,3 +1,6 @@
+% !TEX TS-program = xelatex
+% !TEX encoding = UTF-8 Unicode
+
 \newcommand{\showteaching}{0}
 \newcommand{\showreferences}{0}
 \newcommand{\hideexcesseducation}{1}
@@ -21,25 +24,26 @@
 \usepackage{tikz}
 \usepackage{hyperref}
 \usepackage{fontawesome5}
+\usepackage{fontspec}
 %\usepackage{glossdictionary}
 
 %format--------------------------------------
 \geometry{a4paper, portrait, margin=0.5in}
+
+%\setmainfont{Geist-Regular}
+%\newfontfamily\otherfont{Geist-Bold}
+\renewcommand{\familydefault}{\sfdefault}
 
 \definecolor{bluedark1}{RGB}{31, 56, 100}
 \definecolor{bluedark2}{RGB}{20, 25, 50}
 \definecolor{primarycolor}{HTML}{3b0764}
 \definecolor{secondarycolor}{HTML}{ffffff}
 
-\renewcommand{\familydefault}{\sfdefault}
-
 \sectionfont{\color{bluedark1} \fontsize{14}{0}\selectfont}
 \subsectionfont{\color{bluedark1} \fontsize{12}{0}\selectfont}
 \subsubsectionfont{\color{bluedark2} \fontsize{11}{0}\selectfont}
 
 \setlength{\parindent}{0pt}
-
-\fontfamily{pcr}\selectfont
 
 \let\tempone\itemize
 \let\temptwo\enditemize
@@ -91,6 +95,8 @@
 		\node[rectangle, fill=primarycolor, anchor=north, minimum width=\paperwidth, minimum height=3.5cm] (box) at (current page.north) {};
 
 		\node[anchor=west, text=white, xshift=0.5in, yshift=-1.8cm, text width=0.5\paperwidth] at (box.north west) {
+			%\Huge\bfseries\otherfont\Title\newline\newline
+			%\Large\otherfont\Subtitle
 			\Huge\bfseries\Title\newline\newline
 			\Large\Subtitle
 		};
