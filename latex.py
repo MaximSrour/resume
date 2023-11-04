@@ -66,6 +66,9 @@ def new_saved_item(id, content):
     return f"\\newsaveditem{{{id}}}{{{content}\n}}"
 
 def work_experience(data: Position):
+
+    #TODO: Add assertion
+
     text = ""
 
     data.start = date_to_tex(data.start)
@@ -81,6 +84,9 @@ def work_experience(data: Position):
     return new_saved_item(data.id, text)
 
 def education(data: Education):
+
+    #TODO: Add assertion
+    
     text = ""
 
     text += f"\n\t\educationitem{{{data.title}}}{{{data.organisation}}}{{{data.start}}}{{{data.end}}}{{\n\t\t{paragraph(data.description)}\n\t}}"
