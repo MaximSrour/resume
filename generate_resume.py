@@ -2,6 +2,8 @@ from dotenv import load_dotenv
 import os
 import MySQLdb
 from datetime import datetime
+import sys
+import getopt
 
 import latex
 
@@ -11,6 +13,32 @@ FILE_NAME = "Maxim Srour - Resume"
 FILE_NAME = FILE_NAME.replace(" ", "\\ ")
 
 load_dotenv()
+
+def get_arguments(argv: list[str]) -> dict[str, str]:
+    """
+    Gets the arguments passed into the program
+
+    @param {list[str]} argv - The arguments passed into the program
+    @returns {dict[str, str]} - A dictionary containing the arguments passed into the program
+    """
+
+    arguments = {}
+
+    try:
+        opts, args = getopt.getopt(argv, "qs", ["quiet", "skip"])
+
+    except getopt.GetoptError:
+        sys.exit(2)
+
+    for opt, arg in opts:
+        if opt in ("-q", "--quiet"):
+            arguments["quiet"] = arg
+        elif opt in ("-s", "--skip"):
+            arguments["skip"] = arg
+
+    return arguments
+
+PROGRAM_ARGS = get_arguments(sys.argv[1:])
 
 class Connection:
     """
@@ -24,6 +52,8 @@ class Connection:
         Create a new instance of the class
 
         @returns {Connection} - The connection object
+
+        @classmethod
         """
         
         if cls._self is None:
@@ -49,7 +79,7 @@ class Connection:
 
 def process_query_data(query: str, data_shape: type) -> list[type]:
     """
-    Process the data from a query into a list of objects
+    Process the data from a query into a list of objects based on the specified shape
 
     @params {string} query - The query to run
     @params {type} data_shape - The class to shape the data into
@@ -62,8 +92,8 @@ def process_query_data(query: str, data_shape: type) -> list[type]:
     data = cursor.fetchall()
 
     out = []
-    for element in data:
-        out.append(data_shape(element))
+    for row in data:
+        out.append(data_shape(row))
     
     return out
 
@@ -82,12 +112,14 @@ def query_work() -> list[Position]:
     for position in positions:
         
         # Join the work object to the position
+        # TODO: Don't loop through everything every single time. Be better
         for work in works:
             if work.id == position.work_id:
                 position.set_work(work)
                 break
         
-        # Join the text objects to the position
+        # Join the text objects to the positions
+        # TODO: Don't loop through everything every single time. Be better
         for position_text in position_texts:
             if position_text.position_id == position.id:
                 position.add_text(position_text)
@@ -116,17 +148,18 @@ def query_education() -> list[Education]:
 
     return educations
 
-def get_data(query: str, id: str, generator_func: callable) -> str:
+def get_data(query: callable, id: str, generator_func: callable) -> str:
     """
     Get the data from a query
 
-    @params {str} query - The query to run
+    @params {callable} query - The query to run
     @params {str} id - The latex id to use
     @params {callable} generator_func - The function to generate the latex
 
     @returns {str} - The latex string
     """
     
+    print(f"Running query: {query.__name__}")
     rows = query()
 
     tex = ""
@@ -176,12 +209,16 @@ def main() -> None:
     The main function
     """
     
-    latex_out = generate_tex()
+    if "skip" not in PROGRAM_ARGS:
+        latex_out = generate_tex()
 
-    with open("./tex/resumeitems.sty", "w") as file:
-        file.write(latex_out)
+        with open("./tex/resumeitems.sty", "w") as file:
+            file.write(latex_out)
 
-    os.system(f"pdflatex -output-directory ./tex ./tex/{FILE_NAME}.tex")
+    if "quiet" not in PROGRAM_ARGS:
+        os.system(f"pdflatex -output-directory ./tex ./tex/{FILE_NAME}.tex")
+    else:
+        os.system(f"pdflatex -output-directory ./tex ./tex/{FILE_NAME}.tex > /dev/null")
 
     #clean_files()
 
