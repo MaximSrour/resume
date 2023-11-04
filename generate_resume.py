@@ -13,14 +13,28 @@ FILE_NAME = FILE_NAME.replace(" ", "\\ ")
 load_dotenv()
 
 class Connection:
+    """
+    A singleton class to handle the connection to the database
+    """
+
     _self = None
 
     def __new__(cls):
+        """
+        Create a new instance of the class
+
+        @returns {Connection} - The connection object
+        """
+        
         if cls._self is None:
             cls._self = super().__new__(cls)
         return cls._self
 
     def __init__(self):
+        """
+        Initialize the connection
+        """
+        
         self.connection = MySQLdb.connect(
             host= os.getenv("DB_HOST"),
             user=os.getenv("DB_USERNAME"),
@@ -61,22 +75,22 @@ def query_work() -> list[Position]:
     """
 
     works = process_query_data("SELECT * FROM WorkExperience", WorkExperience)
-
     positions = process_query_data("SELECT * FROM Position", Position)    
-
     position_texts = process_query_data("SELECT * FROM PositionText", PositionText)
 
+    # Create a join between the positions and relevant work/text objects
     for position in positions:
+        
+        # Join the work object to the position
         for work in works:
             if work.id == position.work_id:
                 position.set_work(work)
                 break
         
+        # Join the text objects to the position
         for position_text in position_texts:
             if position_text.position_id == position.id:
                 position.add_text(position_text)
-
-        position.text = sorted(position.text, key=lambda x: x.order, reverse=False)
     
     def sorting_key(position):
         if position.end == "Current":

@@ -1,0 +1,21 @@
+{
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.autopep8"
+    },
+    "python.formatting.provider": "none",
+
+    "editor.tokenColorCustomizations": {
+        "textMateRules": [
+            {
+                "scope":"string.quoted.docstring.multi.python",
+                "settings": {
+                    "foreground": "#6a9955"
+                }
+            }
+        ]
+    },
+    
+    "[csv][dynamic csv][tsv][csv (semicolon)]": {
+        "editor.stickyScroll.enabled": true
+    },
+}
