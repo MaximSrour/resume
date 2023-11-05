@@ -2,17 +2,18 @@
 This file renders a PDF resume from a latex template and a database.
 
 Usage:
-    python generate_resume.py [-s] [-q]
+    python generate_resume.py [-h] [-s] [-q]
 
 Options:
+    -h, --help    Print the help message
     -s, --skip    Skip regenerating the resumeitems.sty file. Render based on the cached version
     -q, --quiet   Don't print the output of the latex compiler
 
 Exit codes:
-    0 - Program ran successfully
-    2 - Invalid arguments passed into the program
-    10 - Error connecting to database
-    11 - Error writing to file
+    0   Program ran successfully
+    2   Invalid arguments passed into the program
+    10  Error connecting to database
+    11  Error writing to file
 """
 
 from dotenv import load_dotenv
@@ -42,25 +43,6 @@ FILE_TEX = f"{os.path.join(DIR_TEX, FILE_NAME)}.tex"
 
 load_dotenv()
 
-def help() -> None:
-    """
-    Print the help message
-    """
-
-    print("Usage:")
-    print("\tpython generate_resume.py [-h] [-s] [-q]")
-    print("")
-    print("Options:")
-    print("\t-h, --help    Print this help message")
-    print("\t-s, --skip    Skip regenerating the resumeitems.sty file. Render based on the cached version")
-    print("\t-q, --quiet   Don't print the output of the latex compiler")
-    print("")
-    print("Exit codes:")
-    print("\t0 - Program ran successfully")
-    print("\t2 - Invalid arguments passed into the program")
-    print("\t10 - Error connecting to database")
-    print("\t11 - Error writing to file")
-
 def get_arguments(argv: list[str]) -> dict[str, str]:
     """
     Gets the arguments passed into the program
@@ -80,7 +62,7 @@ def get_arguments(argv: list[str]) -> dict[str, str]:
 
     for opt, arg in opts:
         if opt in ("-h", "--help"):
-            help()
+            print(__doc__)
             sys.exit(0)
         elif opt in ("-q", "--quiet"):
             arguments["quiet"] = arg
