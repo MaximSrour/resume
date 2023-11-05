@@ -51,19 +51,59 @@ def escape_characters(string_to_clean: str) -> str:
     
     return string_to_clean
 
-def paragraph(content: str, header: str = "") -> str:
+def tex(command: str, *args: str) -> str:
+    """
+    Create a latex string
+
+    @params {str} args - The arguments to join
+    @returns {str} - The latex string
+    """
+
+    return f"\\{command}" + "".join(f"{{{escape_characters(arg)}}}" for arg in args)
+
+def section(title: str, numbered: bool = False) -> str:
+    """
+    Create a latex section
+
+    @params {str} title - The title of the section
+    @params {bool} numbered - Whether the section should be numbered
+    @returns {str} - The latex string
+    """
+    
+    return tex("section", title) if numbered else tex("section*", title)
+
+def paragraph(content: str, label: str = "") -> str:
     """
     Create a latex paragraph
 
     @params {str} content - The content of the paragraph
-    @params {str} header - The header of the paragraph
+    @params {str} label - The label of the paragraph
     @returns {str} - The latex string
     """
     
-    return f"\\paragraph{{{header}}}{content}"
+    return tex("paragraph", label) + content
 
-def new_saved_item(id, content):
-    return f"\\newsaveditem{{{id}}}{{{content}\n}}"
+def new_saved_item(id: str, item: str) -> str:
+    """
+    Create a new saved item
+
+    @params {str} id - The id of the item
+    @params {str} item - The item to save
+    @returns {str} - The latex string
+    """
+    
+    return tex("newsaveditem", id, f"{item}\n")
+
+def item(content: str, label: str = "") -> str:
+    """
+    Create a latex item
+
+    @params {str} content - The content of the item
+    @params {str} label - The label of the item
+    @returns {str} - The latex string
+    """
+    
+    return tex("item", label) + content
 
 def work_experience(data: Position):
 

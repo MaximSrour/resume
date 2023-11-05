@@ -11,9 +11,10 @@ Options:
 
 Exit codes:
     0   Program ran successfully
-    2   Invalid arguments passed into the program
+    1   Invalid arguments passed into the program
+    2   A necessary file does not exist
+    3   Error writing to file
     10  Error connecting to database
-    11  Error writing to file
 """
 
 from dotenv import load_dotenv
@@ -22,10 +23,11 @@ import MySQLdb
 from datetime import datetime
 import sys
 import getopt
+import subprocess
 
 import latex
 
-from logger import Logger
+from pylogger import Logger
 
 from local_types import *
 
@@ -36,7 +38,6 @@ DIR_TEX = os.path.join(DIR_ROOT, "tex")
 
 FILE_STY_NAME = "resumeitems"
 FILE_NAME = "Maxim Srour - Resume"
-FILE_NAME = FILE_NAME.replace(" ", "\\ ")
 
 FILE_STY = f"{os.path.join(DIR_TEX, FILE_STY_NAME)}.sty"
 FILE_TEX = f"{os.path.join(DIR_TEX, FILE_NAME)}.tex"
@@ -58,7 +59,7 @@ def get_arguments(argv: list[str]) -> dict[str, str]:
 
     except getopt.GetoptError:
         Logger.error("Invalid arguments passed into the program")
-        sys.exit(2)
+        sys.exit(1)
 
     for opt, arg in opts:
         if opt in ("-h", "--help"):
@@ -91,6 +92,7 @@ class Connection:
         
         if cls._self is None:
             cls._self = super().__new__(cls)
+        
         return cls._self
 
     def __init__(self):
@@ -100,16 +102,17 @@ class Connection:
         
         try:
             self.connection = MySQLdb.connect(
-                host= os.getenv("DB_HOST"),
-                user=os.getenv("DB_USERNAME"),
-                passwd= os.getenv("DB_PASSWORD"),
-                db= os.getenv("DB_NAME"),
-                autocommit = True,
-                ssl_mode = "VERIFY_IDENTITY",
-                ssl      = {
+                host        = os.getenv("DB_HOST"),
+                user        = os.getenv("DB_USERNAME"),
+                passwd      = os.getenv("DB_PASSWORD"),
+                db          = os.getenv("DB_NAME"),
+                autocommit  = True,
+                ssl_mode    = "VERIFY_IDENTITY",
+                ssl         = {
                     "ca": "/etc/ssl/certs/ca-certificates.crt"
                 }
             )
+        
         except Exception as e:
             Logger.error(f"Error connecting to database:\n{e}")
             exit(10)
@@ -121,6 +124,8 @@ def process_query_data(query: str, data_shape: type) -> list[type]:
     @params {string} query - The query to run
     @params {type} data_shape - The class to shape the data into
     @returns {list[type]} - A list of objects
+
+    TODO: return a dict instead of a list
     """
 
     cursor = Connection().connection.cursor()
@@ -128,6 +133,7 @@ def process_query_data(query: str, data_shape: type) -> list[type]:
     cursor.execute(query)
     data = cursor.fetchall()
 
+    # Take each row (tuple) and convert it into an object with the specified shape
     out = []
     for row in data:
         out.append(data_shape(row))
@@ -196,7 +202,7 @@ def get_data(query: callable, id: str, generator_func: callable) -> str:
     @returns {str} - The latex string
     """
 
-    Logger.info(f"Running query: {query.__name__}")
+    Logger.debug(f"Running query - {query.__name__}")
     rows = query()
 
     tex = ""
@@ -229,6 +235,8 @@ def generate_tex() -> str:
 
     latex_out = latex.escape_characters(latex_out)
 
+    Logger.info("Finished generating tex string")
+
     return latex_out
 
 def compile_tex() -> None:
@@ -237,11 +245,16 @@ def compile_tex() -> None:
     """
 
     Logger.info("Compiling tex file")
+
+    # check if FILE_STY exists
+    if not os.path.exists(FILE_STY):
+        Logger.error(f"File {FILE_STY} does not exist")
+        exit(2)
     
     if "quiet" not in PROGRAM_ARGS:
-        os.system(f"xelatex -output-directory {DIR_TEX} {FILE_TEX}")
+        subprocess.run(["xelatex", "-output-directory", DIR_TEX, FILE_TEX])
     else:
-        os.system(f"xelatex -output-directory {DIR_TEX} {FILE_TEX} > /dev/null")
+        subprocess.run(["xelatex", "-output-directory", DIR_TEX, FILE_TEX], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
 
     Logger.info("Finished compiling tex file")
 
@@ -262,7 +275,8 @@ def main() -> None:
     The main function
     """
     
-    if "skip" not in PROGRAM_ARGS:
+    # Only skip this step if the skip argument is passed in and the compiled file already exists
+    if not ("skip" in PROGRAM_ARGS and os.path.exists(FILE_STY)) :
         latex_out = generate_tex()
 
         try:
@@ -271,7 +285,7 @@ def main() -> None:
         
         except Exception as e:
             Logger.error(f"Error writing to file:\n{e}")
-            exit(11)
+            exit(4)
     
     compile_tex()
 
