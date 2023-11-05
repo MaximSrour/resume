@@ -1,3 +1,19 @@
+"""
+This file renders a PDF resume from a latex template and a database.
+
+Usage:
+    python generate_resume.py [-s] [-q]
+
+Options:
+    -s, --skip    Skip regenerating the resumeitems.sty file. Render based on the cached version
+    -q, --quiet   Don't print the output of pdflatex
+
+Exit codes:
+    0 - Program ran successfully
+    2 - Invalid arguments passed into the program
+    TODO: Add more exit codes
+"""
+
 from dotenv import load_dotenv
 import os
 import MySQLdb
@@ -6,6 +22,8 @@ import sys
 import getopt
 
 import latex
+
+from logger import Logger
 
 from local_types import *
 
@@ -65,17 +83,21 @@ class Connection:
         Initialize the connection
         """
         
-        self.connection = MySQLdb.connect(
-            host= os.getenv("DB_HOST"),
-            user=os.getenv("DB_USERNAME"),
-            passwd= os.getenv("DB_PASSWORD"),
-            db= os.getenv("DB_NAME"),
-            autocommit = True,
-            ssl_mode = "VERIFY_IDENTITY",
-            ssl      = {
-                "ca": "/etc/ssl/certs/ca-certificates.crt"
-            }
-        )
+        try:
+            self.connection = MySQLdb.connect(
+                host= os.getenv("DB_HOST"),
+                user=os.getenv("DB_USERNAME"),
+                passwd= os.getenv("DB_PASSWORD"),
+                db= os.getenv("DB_NAME"),
+                autocommit = True,
+                ssl_mode = "VERIFY_IDENTITY",
+                ssl      = {
+                    "ca": "/etc/ssl/certs/ca-certificates.crt"
+                }
+            )
+        except Exception as e:
+            Logger.error(f"Error connecting to database:\n{e}")
+            exit(10)
 
 def process_query_data(query: str, data_shape: type) -> list[type]:
     """
@@ -159,7 +181,7 @@ def get_data(query: callable, id: str, generator_func: callable) -> str:
     @returns {str} - The latex string
     """
     
-    print(f"Running query: {query.__name__}")
+    Logger.info(f"Running query: {query.__name__}")
     rows = query()
 
     tex = ""
@@ -183,6 +205,8 @@ def generate_tex() -> str:
     @returns {str} - The tex string
     """
 
+    Logger.info("Generating tex string")
+
     latex_out = "\\NeedsTeXFormat{LaTeX2e}\n\\ProvidesPackage{resumeitems}[Maxim]\n\\usepackage{resumeassets}\n\n"
 
     latex_out += get_data(query_work, "workexperience", latex.work_experience)
@@ -192,10 +216,25 @@ def generate_tex() -> str:
 
     return latex_out
 
+def compile_tex() -> None:
+    """
+    Compile the tex file
+    """
+
+    Logger.info("Compiling tex file")
+    
+    if "quiet" not in PROGRAM_ARGS:
+        os.system(f"pdflatex -output-directory ./tex ./tex/{FILE_NAME}.tex")
+    else:
+        os.system(f"pdflatex -output-directory ./tex ./tex/{FILE_NAME}.tex > /dev/null")
+
+    Logger.info("Finished compiling tex file")
+
 def clean_files() -> None:
     """
     Clean the files in the tex directory
     """
+    Logger.info("Removing excess files")
 
     extensions = ["aux", "log", "out", "glo", "xdy", "synctex.gz"]
 
@@ -214,13 +253,13 @@ def main() -> None:
 
         with open("./tex/resumeitems.sty", "w") as file:
             file.write(latex_out)
-
-    if "quiet" not in PROGRAM_ARGS:
-        os.system(f"xelatex -output-directory ./tex ./tex/{FILE_NAME}.tex")
-    else:
-        os.system(f"xelatex -output-directory ./tex ./tex/{FILE_NAME}.tex > /dev/null")
+    
+    compile_tex()
 
     #clean_files()
 
 if __name__ == "__main__":
+    Logger.init()
+    Logger.header("Generating resume")
+
     main()
