@@ -6,12 +6,13 @@ Usage:
 
 Options:
     -s, --skip    Skip regenerating the resumeitems.sty file. Render based on the cached version
-    -q, --quiet   Don't print the output of pdflatex
+    -q, --quiet   Don't print the output of the latex compiler
 
 Exit codes:
     0 - Program ran successfully
     2 - Invalid arguments passed into the program
-    TODO: Add more exit codes
+    10 - Error connecting to database
+    11 - Error writing to file
 """
 
 from dotenv import load_dotenv
@@ -27,10 +28,38 @@ from logger import Logger
 
 from local_types import *
 
+# Get root directory of git repo
+DIR_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+DIR_SRC = os.path.join(DIR_ROOT, "src")
+DIR_TEX = os.path.join(DIR_ROOT, "tex")
+
+FILE_STY_NAME = "resumeitems"
 FILE_NAME = "Maxim Srour - Resume"
 FILE_NAME = FILE_NAME.replace(" ", "\\ ")
 
+FILE_STY = f"{os.path.join(DIR_TEX, FILE_STY_NAME)}.sty"
+FILE_TEX = f"{os.path.join(DIR_TEX, FILE_NAME)}.tex"
+
 load_dotenv()
+
+def help() -> None:
+    """
+    Print the help message
+    """
+
+    print("Usage:")
+    print("\tpython generate_resume.py [-h] [-s] [-q]")
+    print("")
+    print("Options:")
+    print("\t-h, --help    Print this help message")
+    print("\t-s, --skip    Skip regenerating the resumeitems.sty file. Render based on the cached version")
+    print("\t-q, --quiet   Don't print the output of the latex compiler")
+    print("")
+    print("Exit codes:")
+    print("\t0 - Program ran successfully")
+    print("\t2 - Invalid arguments passed into the program")
+    print("\t10 - Error connecting to database")
+    print("\t11 - Error writing to file")
 
 def get_arguments(argv: list[str]) -> dict[str, str]:
     """
@@ -43,13 +72,17 @@ def get_arguments(argv: list[str]) -> dict[str, str]:
     arguments = {}
 
     try:
-        opts, args = getopt.getopt(argv, "qs", ["quiet", "skip"])
+        opts, args = getopt.getopt(argv, "hqs", ["help", "quiet", "skip"])
 
     except getopt.GetoptError:
+        Logger.error("Invalid arguments passed into the program")
         sys.exit(2)
 
     for opt, arg in opts:
-        if opt in ("-q", "--quiet"):
+        if opt in ("-h", "--help"):
+            help()
+            sys.exit(0)
+        elif opt in ("-q", "--quiet"):
             arguments["quiet"] = arg
         elif opt in ("-s", "--skip"):
             arguments["skip"] = arg
@@ -180,7 +213,7 @@ def get_data(query: callable, id: str, generator_func: callable) -> str:
 
     @returns {str} - The latex string
     """
-    
+
     Logger.info(f"Running query: {query.__name__}")
     rows = query()
 
@@ -224,9 +257,9 @@ def compile_tex() -> None:
     Logger.info("Compiling tex file")
     
     if "quiet" not in PROGRAM_ARGS:
-        os.system(f"pdflatex -output-directory ./tex ./tex/{FILE_NAME}.tex")
+        os.system(f"xelatex -output-directory {DIR_TEX} {FILE_TEX}")
     else:
-        os.system(f"pdflatex -output-directory ./tex ./tex/{FILE_NAME}.tex > /dev/null")
+        os.system(f"xelatex -output-directory {DIR_TEX} {FILE_TEX} > /dev/null")
 
     Logger.info("Finished compiling tex file")
 
@@ -237,11 +270,10 @@ def clean_files() -> None:
     Logger.info("Removing excess files")
 
     extensions = ["aux", "log", "out", "glo", "xdy", "synctex.gz"]
-
     for extension in extensions:
-        os.system(f"rm ./tex/{FILE_NAME}.{extension}")
+        os.system(f"rm {os.path.join(DIR_TEX, FILE_NAME)}.{extension}")
 
-    os.system(f"rm ./tex/texput.log")
+    os.system(f"rm {os.path.join(DIR_TEX, 'texput')}.log")
 
 def main() -> None:
     """
@@ -251,8 +283,13 @@ def main() -> None:
     if "skip" not in PROGRAM_ARGS:
         latex_out = generate_tex()
 
-        with open("./tex/resumeitems.sty", "w") as file:
-            file.write(latex_out)
+        try:
+            with open(FILE_STY, "w") as file:
+                file.write(latex_out)
+        
+        except Exception as e:
+            Logger.error(f"Error writing to file:\n{e}")
+            exit(11)
     
     compile_tex()
 
