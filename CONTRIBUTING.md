@@ -17,5 +17,4 @@ When you create a commit we kindly ask you to follow the convention `category(sc
 
     e.g. `feat(components): add new prop to the avatar component`
 
-If you are interested in the detailed specification you can visit [Conventional Commits](https://www.conventionalcommits.org/) or check out the
-[Angular Commit Message Guidelines](https://github.com/angular/angular/blob/22b96b9/CONTRIBUTING.md#-commit-message-guidelines).
+If you are interested in the detailed specification you can visit [Conventional Commits](https://www.conventionalcommits.org/) or check out the [Angular Commit Message Guidelines](https://github.com/angular/angular/blob/22b96b9/CONTRIBUTING.md#-commit-message-guidelines).
