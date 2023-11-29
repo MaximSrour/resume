@@ -59,7 +59,8 @@ def tex(command: str, *args: str) -> str:
     @returns {str} - The latex string
     """
 
-    return f"\\{command}" + "".join(f"{{{escape_characters(arg)}}}" for arg in args)
+    #return f"\\{command}" + "".join(f"{{{escape_characters(arg)}}}" for arg in args)
+    return f"\\{command}" + "".join(f"{{{arg}}}" for arg in args)
 
 def section(title: str, numbered: bool = False) -> str:
     """
