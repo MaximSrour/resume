@@ -42,7 +42,17 @@ FILE_NAME = "Maxim Srour - Resume"
 FILE_STY = f"{os.path.join(DIR_TEX, FILE_STY_NAME)}.sty"
 FILE_TEX = f"{os.path.join(DIR_TEX, FILE_NAME)}.tex"
 
-load_dotenv()
+def get_env() -> None:
+    """
+    Get the environment variables from the .env file
+    """
+    
+    if not os.path.exists(os.path.join(DIR_ROOT, ".env")):
+        Logger.error("File .env does not exist")
+        Logger.info("Create it by copying the .env.example file and fill it with the relevant details")
+        exit(2)
+
+    load_dotenv()
 
 def get_arguments(argv: list[str]) -> dict[str, str]:
     """
@@ -72,6 +82,7 @@ def get_arguments(argv: list[str]) -> dict[str, str]:
 
     return arguments
 
+get_env()
 PROGRAM_ARGS = get_arguments(sys.argv[1:])
 
 class Connection:
@@ -215,6 +226,7 @@ def get_data(query: callable, id: str, generator_func: callable) -> str:
         tex += "\n" + generator_func(row)
         command_string += f"\t\\printsaveditem{{{row.id}}}\n"
 
+    command_string += "\\vspace{-15pt}\n"
     tex += "\n" + command_string + "}\n\n"
 
     return tex
